@@ -7,24 +7,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: iterative/setup-cml@v1
-      # Étape pour configurer Miniconda (installe Conda)
+      # Étape pour configurer Miniconda (installer Conda)
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: 'latest'  # Installer la dernière version de Miniconda
-          auto-update-conda: true  # Met à jour Conda à chaque exécution
+          auto-update-conda: true  # Met à jour Conda automatiquement
           activate-environment: env_mlops  # Active l'environnement conda après création
       # Étape pour créer un environnement conda et installer les dépendances
       - name: Create Conda Environment and Install Dependencies
         run: |
-          conda create --name env_mlops python=3.9.21 -y  # Crée l'environnement conda env_mlops avec Python 3.8
-          conda activate env_mlops  # Active l'environnement conda
+          conda init bash  # Initialiser Conda pour bash
+          conda create --name env_mlops python=3.9.21 -y  # Crée l'environnement conda env_mlops avec Python 3.9
+          conda activate env_mlops  # Active l'environnement conda (fonctionnera après l'initialisation)
           pip install -r requirements.txt  # Installe les dépendances du fichier requirements.txt
+      # Étape pour entraîner le modèle
       - name: Train model
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python wine_linear_regression_test.py  
-          cat metrics.txt 
-
-
+          conda run --name env_mlops python wine_linear_regression_test.py  # Exécute le script Python dans l'environnement Conda
+          cat metrics.txt  # Affiche les résultats
